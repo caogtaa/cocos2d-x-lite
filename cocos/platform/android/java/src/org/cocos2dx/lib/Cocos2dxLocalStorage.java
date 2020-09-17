@@ -28,9 +28,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.IpSecManager;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Message;
 import android.util.Log;
 
 public class Cocos2dxLocalStorage {
+
+    public interface SQLTask {
+        public abstract void run();
+    }
 
     private static final String TAG = "Cocos2dxLocalStorage";
 
@@ -40,6 +48,9 @@ public class Cocos2dxLocalStorage {
 
     private static DBOpenHelper mDatabaseOpenHelper = null;
     private static SQLiteDatabase mDatabase = null;
+
+    private static HandlerThread mSQLThread = null;
+    private static Handler mLoopHandler = null;
     /**
      * Constructor
      * @param context The Context within which to work, used to create the DB
@@ -51,102 +62,178 @@ public class Cocos2dxLocalStorage {
             TABLE_NAME = tableName;
             mDatabaseOpenHelper = new DBOpenHelper(Cocos2dxActivity.getContext());
             mDatabase = mDatabaseOpenHelper.getWritableDatabase();
+
+            mSQLThread = new HandlerThread("SQL Thread");
+            mSQLThread.start();
+            mLoopHandler = new Handler(mSQLThread.getLooper()){
+                @Override
+                public void handleMessage(Message msg)
+                {
+                    // todo: msg should contain a callback
+                    // not necessary, use mLoopHandler.pos() directly
+                    /*Runnable cb = msg.getCallback();
+                    if (cb != null)
+                        cb.run();*/
+                }
+            };
+
             return true;
         }
         return false;
     }
-    
-    public static void destroy() {
-        if (mDatabase != null) {
-            mDatabase.close();
+
+    protected static void PostSync(Object sem, SQLTask task) {
+        mLoopHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    task.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        synchronized (sem) {
+                            sem.notify();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        try {
+            synchronized (sem) {
+                sem.wait();
+            }
+            int k = 0;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+    }
+
+    protected static void PostAsync(SQLTask task) {
+        mLoopHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    task.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public static void destroy() {
+        final int[] res = {0};
+        PostSync(res, new SQLTask() {
+            @Override
+            public void run() {
+                if (mDatabase != null) {
+                    mDatabase.close();
+                }
+            }
+        });
+
+        mSQLThread.quit();  // or quitSafely()
     }
 
     public static void setItem(String key, String value) {
-        try {
-            String sql = "replace into "+TABLE_NAME+"(key,value)values(?,?)";
-            mDatabase.execSQL(sql, new Object[] { key, value });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        PostAsync(new SQLTask() {
+            @Override
+            public void run() {
+                String sql = "replace into " + TABLE_NAME + "(key,value)values(?,?)";
+                mDatabase.execSQL(sql, new Object[]{key, value});
+            }
+        });
     }
 
     public static String getItem(String key) {
-        String ret = null;
-        try {
-            String sql = "select value from "+TABLE_NAME+" where key=?";
-            Cursor c = mDatabase.rawQuery(sql, new String[]{key});
-            while (c.moveToNext()) {
-                // only return the first value
-                if (ret != null)
-                {
-                    Log.e(TAG, "The key contains more than one value.");
-                    break;
+        final String[] ret = {null};
+        PostSync(ret, new SQLTask() {
+            @Override
+            public void run() {
+                String sql = "select value from "+TABLE_NAME+" where key=?";
+                Cursor c = mDatabase.rawQuery(sql, new String[]{key});
+                while (c.moveToNext()) {
+                    // only return the first value
+                    if (ret[0] != null)
+                    {
+                        Log.e(TAG, "The key contains more than one value.");
+                        break;
+                    }
+                    ret[0] = c.getString(c.getColumnIndex("value"));
                 }
-                ret = c.getString(c.getColumnIndex("value"));
+                c.close();
             }
-            c.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return ret;
+        });
+
+        return ret[0];
     }
 
     public static void removeItem(String key) {
-        try {
-            String sql = "delete from "+TABLE_NAME+" where key=?";
-            mDatabase.execSQL(sql, new Object[] {key});
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        PostAsync(new SQLTask() {
+            @Override
+            public void run() {
+                String sql = "delete from "+TABLE_NAME+" where key=?";
+                mDatabase.execSQL(sql, new Object[] {key});
+            }
+        });
     }
 
     public static void clear() {
-        try {
-            String sql = "delete from "+TABLE_NAME;
-            mDatabase.execSQL(sql);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        PostAsync(new SQLTask() {
+            @Override
+            public void run() {
+                String sql = "delete from " + TABLE_NAME;
+                mDatabase.execSQL(sql);
+            }
+        });
     }
 
     public static String getKey(int nIndex) {
-        String ret = null;
-        try {
-            int nCount = 0;
-            String sql = "select key from "+TABLE_NAME + " order by rowid asc";
-            Cursor c = mDatabase.rawQuery(sql, null);
-            if(nIndex < 0 || nIndex >= c.getCount()) {
-                return null;
-            }
-
-            while (c.moveToNext()) {
-                if(nCount == nIndex) {
-                    ret = c.getString(c.getColumnIndex("key"));
-                    break;
+        final String[] ret = {null};
+        PostSync(ret, new SQLTask() {
+            @Override
+            public void run() {
+                int nCount = 0;
+                String sql = "select key from "+TABLE_NAME + " order by rowid asc";
+                Cursor c = mDatabase.rawQuery(sql, null);
+                if(nIndex < 0 || nIndex >= c.getCount()) {
+                    // null
+                    return;
                 }
-                nCount++;
+
+                while (c.moveToNext()) {
+                    if(nCount == nIndex) {
+                        ret[0] = c.getString(c.getColumnIndex("key"));
+                        break;
+                    }
+                    nCount++;
+                }
+                c.close();
             }
-            c.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return ret;
+        });
+
+        return ret[0];
     }
 
-    public  static int getLength() {
-        int res = 0;
-        try {
-            String sql = "select count(*) as nums from "+TABLE_NAME;
-            Cursor c = mDatabase.rawQuery(sql, null);
-            if (c.moveToNext()){
-                res = c.getInt(c.getColumnIndex("nums"));
+    public static int getLength() {
+        final int[] res = {0};
+        PostSync(res, new SQLTask() {
+            @Override
+            public void run() {
+                String sql = "select count(*) as nums from "+TABLE_NAME;
+                Cursor c = mDatabase.rawQuery(sql, null);
+                if (c.moveToNext()){
+                    res[0] = c.getInt(c.getColumnIndex("nums"));
+                }
+                c.close();
             }
-            c.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return res;
+        });
+
+        return res[0];
     }
 
     /**
