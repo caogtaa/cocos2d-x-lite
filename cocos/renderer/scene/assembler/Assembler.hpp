@@ -158,7 +158,7 @@ public:
      *  @brief Resets ia data.
      */
     virtual void reset() override;
-    
+
     /**
      *  @brief Gets the material for the given index.
      *  @param[in] index Render data index.
@@ -194,6 +194,9 @@ protected:
     
     bool _ignoreWorldMatrix = false;
     bool _ignoreOpacityFlag = false;
+
+    uint32_t _colorCache = 0xffffff;
+    bool _hasColorCached = false;
 };
 
 // end of scene group

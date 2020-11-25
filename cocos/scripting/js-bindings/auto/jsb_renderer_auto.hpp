@@ -55,6 +55,7 @@ bool js_register_cocos2d_renderer_AssemblerBase(se::Object* obj);
 bool register_all_renderer(se::Object* obj);
 SE_DECLARE_FUNC(js_renderer_AssemblerBase_disableDirty);
 SE_DECLARE_FUNC(js_renderer_AssemblerBase_reset);
+SE_DECLARE_FUNC(js_renderer_AssemblerBase_cacheColor);
 SE_DECLARE_FUNC(js_renderer_AssemblerBase_setUseModel);
 SE_DECLARE_FUNC(js_renderer_AssemblerBase_isDirty);
 SE_DECLARE_FUNC(js_renderer_AssemblerBase_setDirty);
