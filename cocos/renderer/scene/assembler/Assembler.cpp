@@ -262,12 +262,16 @@ void Assembler::updateOpacity(std::size_t index, uint8_t opacity)
         float alpha = opacity / 255.0;
         for (uint32_t i = 0; i < vertexCount; ++i)
         {
-           *(ptrAlpha-1) *= alpha;
-           *(ptrAlpha-2) *= alpha;
-           *(ptrAlpha-3) *= alpha;
-           
-           *ptrAlpha = opacity;
-           ptrAlpha += dataPerVertex;
+            // use origin color before pre-multiply alpha
+            if (_hasColorCached)
+                *(uint32_t*)(ptrAlpha-3) = _colorCache;
+
+            *(ptrAlpha-1) *= alpha;
+            *(ptrAlpha-2) *= alpha;
+            *(ptrAlpha-3) *= alpha;
+
+            *ptrAlpha = opacity;
+            ptrAlpha += dataPerVertex;
         }
     }
     else

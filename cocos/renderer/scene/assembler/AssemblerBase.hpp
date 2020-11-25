@@ -165,6 +165,8 @@ public:
      *  @brief Resets data.
      */
     virtual void reset() {}
+
+    virtual void cacheColor() {}
 protected:
     se::Object* _jsDirty = nullptr;
     uint32_t* _dirty = nullptr;

@@ -272,6 +272,14 @@ reset : function (
 },
 
 /**
+ * @method cacheColor
+ */
+cacheColor : function (
+)
+{
+},
+
+/**
  * @method setUseModel
  * @param {bool} arg0
  */

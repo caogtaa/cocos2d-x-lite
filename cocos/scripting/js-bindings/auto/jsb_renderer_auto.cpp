@@ -903,6 +903,21 @@ static bool js_renderer_AssemblerBase_reset(se::State& s)
 }
 SE_BIND_FUNC(js_renderer_AssemblerBase_reset)
 
+static bool js_renderer_AssemblerBase_cacheColor(se::State& s)
+{
+    cocos2d::renderer::AssemblerBase* cobj = (cocos2d::renderer::AssemblerBase*)s.nativeThisObject();
+    SE_PRECONDITION2(cobj, false, "js_renderer_AssemblerBase_cacheColor : Invalid Native Object");
+    const auto& args = s.args();
+    size_t argc = args.size();
+    if (argc == 0) {
+        cobj->cacheColor();
+        return true;
+    }
+    SE_REPORT_ERROR("wrong number of arguments: %d, was expecting %d", (int)argc, 0);
+    return false;
+}
+SE_BIND_FUNC(js_renderer_AssemblerBase_cacheColor)
+
 static bool js_renderer_AssemblerBase_setUseModel(se::State& s)
 {
     cocos2d::renderer::AssemblerBase* cobj = (cocos2d::renderer::AssemblerBase*)s.nativeThisObject();
@@ -999,6 +1014,7 @@ bool js_register_renderer_AssemblerBase(se::Object* obj)
 
     cls->defineFunction("disableDirty", _SE(js_renderer_AssemblerBase_disableDirty));
     cls->defineFunction("reset", _SE(js_renderer_AssemblerBase_reset));
+    cls->defineFunction("cacheColor", _SE(js_renderer_AssemblerBase_cacheColor));
     cls->defineFunction("setUseModel", _SE(js_renderer_AssemblerBase_setUseModel));
     cls->defineFunction("isDirty", _SE(js_renderer_AssemblerBase_isDirty));
     cls->defineFunction("setDirty", _SE(js_renderer_AssemblerBase_setDirty));
