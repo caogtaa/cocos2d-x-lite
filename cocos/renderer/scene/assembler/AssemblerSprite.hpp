@@ -39,6 +39,7 @@ public:
     virtual void fillBuffers(NodeProxy* node, ModelBatcher* batcher, std::size_t index) override;
     virtual void calculateWorldVertices(const Mat4& worldMat);
     virtual void generateWorldVertices() {};
+    virtual void cacheColor() override;
 protected:
     se::Object* _localObj = nullptr;
     float* _localData = nullptr;

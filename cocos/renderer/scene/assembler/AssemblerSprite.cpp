@@ -157,4 +157,23 @@ void AssemblerSprite::calculateWorldVertices(const Mat4& worldMat)
     
     *_dirty &= ~VERTICES_DIRTY;
 }
+
+void AssemblerSprite::cacheColor() {
+    if(!_vfColor || !_datas || !_vfmt)
+    {
+        return;
+    }
+
+    RenderData* data = _datas->getRenderData(0);
+    if (!data)
+    {
+        return;
+    }
+
+    uint8_t* ptrAlpha = (uint8_t*)data->getVertices() + _alphaOffset;
+    auto ptrColor = (uint32_t*)(ptrAlpha-3);
+    _colorCache = *ptrColor;
+    _hasColorCached = true;
+}
+
 RENDERER_END
