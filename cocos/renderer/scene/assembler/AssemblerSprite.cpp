@@ -164,16 +164,7 @@ void AssemblerSprite::cacheColor() {
         return;
     }
 
-    std::size_t index = 0;
-    if (index >= _iaDatas.size())
-    {
-        return;
-    }
-
-    const IARenderData& ia = _iaDatas[index];
-    std::size_t meshIndex = ia.meshIndex >= 0 ? ia.meshIndex : index;
-
-    RenderData* data = _datas->getRenderData(meshIndex);
+    RenderData* data = _datas->getRenderData(0);
     if (!data)
     {
         return;
