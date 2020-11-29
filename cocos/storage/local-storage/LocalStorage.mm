@@ -43,6 +43,8 @@
 #include <sqlite3.h>
 #endif
 
+using namespace std;
+
 static int _initialized = 0;
 static sqlite3 *_db;
 static sqlite3_stmt *_stmt_select;
@@ -51,6 +53,7 @@ static sqlite3_stmt *_stmt_update;
 static sqlite3_stmt *_stmt_clear;
 static sqlite3_stmt *_stmt_key;
 static sqlite3_stmt *_stmt_count;
+dispatch_queue_t _rw_queue = dispatch_queue_create("dbrw.queue", DISPATCH_QUEUE_SERIAL);
 
 static void localStorageCreateTable()
 {
@@ -64,10 +67,9 @@ static void localStorageCreateTable()
         printf("Error in CREATE TABLE\n");
 }
 
-void localStorageInit( const std::string& fullpath/* = "" */)
-{
+void workThread_localStorageInit(const std::string& fullpath) {
     if (!_initialized) {
-
+        
         int ret = 0;
 
         if (fullpath.empty())
@@ -109,7 +111,15 @@ void localStorageInit( const std::string& fullpath/* = "" */)
     }
 }
 
-void localStorageFree()
+void localStorageInit( const std::string& fullpath/* = "" */)
+{
+    auto context = make_shared<tuple<string>>(fullpath);
+    dispatch_async(_rw_queue, ^{
+        workThread_localStorageInit(std::get<0>(*context));
+    });
+}
+
+void workThread_localStorageFree()
 {
     if (_initialized) {
         sqlite3_finalize(_stmt_select);
@@ -122,8 +132,14 @@ void localStorageFree()
     }
 }
 
-/** sets an item in the LS */
-void localStorageSetItem( const std::string& key, const std::string& value)
+void localStorageFree()
+{
+    dispatch_async(_rw_queue, ^{
+        workThread_localStorageFree();
+    });
+}
+
+void workThread_localStorageSetItem( const std::string& key, const std::string& value)
 {
     assert( _initialized );
     int ok = sqlite3_bind_text(_stmt_update, 1, key.c_str(), -1, SQLITE_TRANSIENT);
@@ -137,8 +153,17 @@ void localStorageSetItem( const std::string& key, const std::string& value)
         printf("Error in localStorage.setItem()\n");
 }
 
+/** sets an item in the LS */
+void localStorageSetItem( const std::string& key, const std::string& value)
+{
+    auto context = make_shared<tuple<string, string>>(key, value);
+    dispatch_async(_rw_queue, ^{
+        workThread_localStorageSetItem(std::get<0>(*context), std::get<1>(*context));
+    });
+}
+
 /** gets an item from the LS */
-bool localStorageGetItem( const std::string& key, std::string *outItem )
+bool workThread_localStorageGetItem( const std::string& key, std::string *outItem )
 {
     assert( _initialized );
     int ok = sqlite3_reset(_stmt_select);
@@ -163,8 +188,19 @@ bool localStorageGetItem( const std::string& key, std::string *outItem )
     }
 }
 
+bool localStorageGetItem( const std::string& key, std::string *outItem )
+{
+    auto context = make_shared<tuple<string, string *, bool>>(key, outItem, false);
+    dispatch_sync(_rw_queue, ^{
+        auto ret = workThread_localStorageGetItem(std::get<0>(*context), std::get<1>(*context));
+        std::get<2>(*context) = ret;
+    });
+    
+    return std::get<2>(*context);
+}
+
 /** removes an item from the LS */
-void localStorageRemoveItem( const std::string& key )
+void workThread_localStorageRemoveItem( const std::string& key )
 {
     assert( _initialized );
     int ok = sqlite3_bind_text(_stmt_remove, 1, key.c_str(), -1, SQLITE_TRANSIENT);
@@ -177,8 +213,16 @@ void localStorageRemoveItem( const std::string& key )
         printf("Error in localStorage.removeItem()\n");
 }
 
+void localStorageRemoveItem( const std::string& key )
+{
+    auto context = make_shared<tuple<string>>(key);
+    dispatch_async(_rw_queue, ^{
+        workThread_localStorageRemoveItem(std::get<0>(*context));
+    });
+}
+
 /** removes all items from the LS */
-void localStorageClear()
+void workThread_localStorageClear()
 {
     assert( _initialized );
     int ok = sqlite3_step(_stmt_clear);
@@ -189,8 +233,15 @@ void localStorageClear()
         printf("Error in localStorage.clear()\n");
 }
 
+void localStorageClear()
+{
+    dispatch_async(_rw_queue, ^{
+        workThread_localStorageClear();
+    });
+}
+
 /** gets an key from the JS. */
-void localStorageGetKey( const int nIndex, std::string *outKey )
+void workThread_localStorageGetKey( const int nIndex, std::string *outKey )
 {
     assert( _initialized );
     if (nIndex < 0)
@@ -230,8 +281,16 @@ void localStorageGetKey( const int nIndex, std::string *outKey )
     }
 }
 
+void localStorageGetKey( const int nIndex, std::string *outKey )
+{
+    auto context = make_shared<tuple<int, string *>>(nIndex, outKey);
+    dispatch_sync(_rw_queue, ^{
+        workThread_localStorageGetKey(std::get<0>(*context), std::get<1>(*context));
+    });
+}
+
 /** gets all items count in the JS. */
-void localStorageGetLength( int& outLength )
+void workThread_localStorageGetLength( int& outLength )
 {
     assert( _initialized );
     int ok = sqlite3_reset(_stmt_count);
@@ -247,6 +306,15 @@ void localStorageGetLength( int& outLength )
     {
         outLength = sqlite3_column_int(_stmt_count, 0);
     }
+}
+
+void localStorageGetLength( int& outLength )
+{
+    auto context = make_shared<tuple<int&>>(outLength);
+    dispatch_sync(_rw_queue, ^{
+        workThread_localStorageGetLength(std::get<0>(*context));
+    });
+
 }
 
 #endif // #if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID)
