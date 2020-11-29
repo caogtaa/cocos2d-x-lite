@@ -635,6 +635,8 @@
 		04FB24122328D42A0021DD02 /* ArmatureCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 04FB24072328D42A0021DD02 /* ArmatureCache.h */; };
 		04FB24132328D42A0021DD02 /* CCArmatureCacheDisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04FB24082328D42A0021DD02 /* CCArmatureCacheDisplay.cpp */; };
 		04FB24142328D42A0021DD02 /* CCArmatureCacheDisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 04FB24082328D42A0021DD02 /* CCArmatureCacheDisplay.cpp */; };
+		08E8605D257349820048F5DC /* LocalStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 08E8605C257349810048F5DC /* LocalStorage.mm */; };
+		08E8605E2573498F0048F5DC /* LocalStorage.mm in Sources */ = {isa = PBXBuildFile; fileRef = 08E8605C257349810048F5DC /* LocalStorage.mm */; };
 		1A14FD912080B4E300E10ABE /* CCGLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A14FD8F2080B4E300E10ABE /* CCGLUtils.cpp */; };
 		1A14FD922080B4E300E10ABE /* CCGLUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A14FD8F2080B4E300E10ABE /* CCGLUtils.cpp */; };
 		1A14FD932080B4E300E10ABE /* CCGLUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A14FD902080B4E300E10ABE /* CCGLUtils.h */; };
@@ -733,8 +735,6 @@
 		1A29D77C2056667800168D9A /* csscolorparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A29D7792056667700168D9A /* csscolorparser.cpp */; };
 		1A29D77D2056667800168D9A /* csscolorparser.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29D77A2056667800168D9A /* csscolorparser.hpp */; };
 		1A29D77E2056667800168D9A /* csscolorparser.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1A29D77A2056667800168D9A /* csscolorparser.hpp */; };
-		1A29D784205666B200168D9A /* LocalStorage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A29D781205666B100168D9A /* LocalStorage.cpp */; };
-		1A29D785205666B200168D9A /* LocalStorage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A29D781205666B100168D9A /* LocalStorage.cpp */; };
 		1A29D788205666B200168D9A /* LocalStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29D783205666B100168D9A /* LocalStorage.h */; };
 		1A29D789205666B200168D9A /* LocalStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 1A29D783205666B100168D9A /* LocalStorage.h */; };
 		1A29D794205666F500168D9A /* jsb_opengl_manual.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A29D78B205666F200168D9A /* jsb_opengl_manual.cpp */; };
@@ -1820,6 +1820,7 @@
 		051C017021E2F85C00D4A347 /* CCModuleConfigIOS.release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = CCModuleConfigIOS.release.xcconfig; sourceTree = "<group>"; };
 		051C017121E2F86900D4A347 /* CCModuleConfigMac.release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = CCModuleConfigMac.release.xcconfig; sourceTree = "<group>"; };
 		051C017221E2F86900D4A347 /* CCModuleConfigMac.debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = CCModuleConfigMac.debug.xcconfig; sourceTree = "<group>"; };
+		08E8605C257349810048F5DC /* LocalStorage.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LocalStorage.mm; sourceTree = "<group>"; };
 		1551A33F158F2AB200E66CFE /* libcocos2d Mac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcocos2d Mac.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1551A342158F2AB200E66CFE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1A14FD8F2080B4E300E10ABE /* CCGLUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CCGLUtils.cpp; sourceTree = "<group>"; };
@@ -1871,7 +1872,6 @@
 		1A29D76E205665D100168D9A /* jsb_cocos2dx_manual.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = jsb_cocos2dx_manual.hpp; sourceTree = "<group>"; };
 		1A29D7792056667700168D9A /* csscolorparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = csscolorparser.cpp; sourceTree = "<group>"; };
 		1A29D77A2056667800168D9A /* csscolorparser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = csscolorparser.hpp; sourceTree = "<group>"; };
-		1A29D781205666B100168D9A /* LocalStorage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LocalStorage.cpp; sourceTree = "<group>"; };
 		1A29D783205666B100168D9A /* LocalStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalStorage.h; sourceTree = "<group>"; };
 		1A29D78B205666F200168D9A /* jsb_opengl_manual.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsb_opengl_manual.cpp; sourceTree = "<group>"; };
 		1A29D78C205666F200168D9A /* jsb_opengl_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsb_opengl_utils.cpp; sourceTree = "<group>"; };
@@ -2996,7 +2996,7 @@
 		1A29D780205666B100168D9A /* local-storage */ = {
 			isa = PBXGroup;
 			children = (
-				1A29D781205666B100168D9A /* LocalStorage.cpp */,
+				08E8605C257349810048F5DC /* LocalStorage.mm */,
 				1A29D783205666B100168D9A /* LocalStorage.h */,
 			);
 			path = "local-storage";
@@ -4878,7 +4878,6 @@
 				46AE3FE92092F3A600F3A228 /* inspector_socket_server.cc in Sources */,
 				1A28FF6F1F20AFAB007A1D9D /* SRError.m in Sources */,
 				1A28FF531F20AFAB007A1D9D /* SRIOConsumer.m in Sources */,
-				1A29D784205666B200168D9A /* LocalStorage.cpp in Sources */,
 				046E06C32185B49F00B24E2D /* ArmatureData.cpp in Sources */,
 				04F0A986234F14BE002C3533 /* Bone.cpp in Sources */,
 				4617864920522469008256E1 /* CCDownloader.cpp in Sources */,
@@ -4971,6 +4970,7 @@
 				ED3057A11BEC77D50083C3ED /* xxhash.c in Sources */,
 				46FDDA6F202ACC6A00931238 /* Pass.cpp in Sources */,
 				04F0AA12234F14BE002C3533 /* TransformConstraint.cpp in Sources */,
+				08E8605D257349820048F5DC /* LocalStorage.mm in Sources */,
 				04F0A97C234F14BE002C3533 /* TransformConstraintTimeline.cpp in Sources */,
 				4617863520522469008256E1 /* HttpAsynConnection-apple.m in Sources */,
 				4DCEC128233238110020F8E3 /* etc2.cpp in Sources */,
@@ -5161,6 +5161,7 @@
 				46FDDA70202ACC6A00931238 /* Pass.cpp in Sources */,
 				1A52DB7A205BCDD000350EE3 /* ScriptEngine.cpp in Sources */,
 				042058CE22A61B340092DE5D /* RenderDataList.cpp in Sources */,
+				08E8605E2573498F0048F5DC /* LocalStorage.mm in Sources */,
 				ED18118D23D6A9DC00DED444 /* CCLabelLayout.cpp in Sources */,
 				1A14FD922080B4E300E10ABE /* CCGLUtils.cpp in Sources */,
 				04F0A975234F14BE002C3533 /* DeformTimeline.cpp in Sources */,
@@ -5262,7 +5263,6 @@
 				BA21055921008B6600E19975 /* jsb_cocos2dx_extension_auto.cpp in Sources */,
 				1A52DB8E2060DEF500350EE3 /* jsb_platfrom_apple.mm in Sources */,
 				503DD8E71926736A00CD74DD /* CCEAGLView-ios.mm in Sources */,
-				1A29D785205666B200168D9A /* LocalStorage.cpp in Sources */,
 				46AE3FEA2092F3A600F3A228 /* inspector_socket_server.cc in Sources */,
 				46FDDA8A202ACC6A00931238 /* Effect.cpp in Sources */,
 				046E06382185B41100B24E2D /* AnimationState.cpp in Sources */,
